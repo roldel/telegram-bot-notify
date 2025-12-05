@@ -73,9 +73,6 @@ CHAT_ID=123456789
 ## 4. Bash version – `tg "your message"`
 
 ### Install
-```bash
-cp .env.example .env
-```
 
 Make script executable and put it in your PATH:
 ```sh
@@ -112,5 +109,5 @@ tg(f"Job completed at {__import__('datetime').datetime.now()}")
 cd python
 pip install -r requirements.txt
 # or: pip install python-dotenv requests
-Copy .env to the python folder or project root.
+Copy .env to the project root
 ```
