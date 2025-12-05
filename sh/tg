@@ -1,0 +1,38 @@
+#!/bin/sh
+# tg - send Telegram message
+# Usage: tg "Your message here"
+
+set -eu
+
+# Resolve repo root relative to this script location
+SCRIPT_DIR="$(dirname "$0")"
+ENV_FILE="$SCRIPT_DIR/../.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "Error: .env file not found in repository root."
+    echo "Expected: $ENV_FILE"
+    exit 1
+fi
+
+# Load env vars
+. "$ENV_FILE"
+
+if [ -z "${API_TOKEN:-}" ] || [ -z "${CHAT_ID:-}" ]; then
+    echo "Error: API_TOKEN and CHAT_ID must be set in .env"
+    exit 1
+fi
+
+if [ -z "${1:-}" ]; then
+    echo "Usage: tg <message>"
+    exit 1
+fi
+
+MESSAGE="$*"
+
+curl -s \
+    --data "text=$MESSAGE" \
+    --data "chat_id=$CHAT_ID" \
+    "https://api.telegram.org/bot$API_TOKEN/sendMessage" \
+    > /dev/null
+
+echo "✅ Sent: $MESSAGE"
