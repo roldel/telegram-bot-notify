@@ -30,7 +30,7 @@ Send Telegram messages from your terminal or Python script in one line.
 4. Choose a username ending with `bot` (e.g. `@my_server_bot`)
 5. BotFather will reply with something like:
 
-```json
+```
 Done! Congratulations on your new bot.
 
 ...
