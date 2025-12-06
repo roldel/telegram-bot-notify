@@ -80,9 +80,15 @@ MESSAGE="$*"
 # ============================================================
 
 
+POST_DATA="text=$MESSAGE&chat_id=$CHAT_ID"
+
 wget -q -O - \
-     --post-data "text=$MESSAGE" \
-     --post-data "chat_id=$CHAT_ID" \
+     --post-data="$POST_DATA" \
      "https://api.telegram.org/bot$API_TOKEN/sendMessage" > /dev/null
+
+echo "✅ Sent: $MESSAGE"
+
+
+
 
 echo "✅ Sent: $MESSAGE"
