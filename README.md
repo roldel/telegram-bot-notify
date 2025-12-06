@@ -81,15 +81,15 @@ This ensures it appears in `/getUpdates`.
 https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates
 ```
 
-5. Look for a chat object like:
+5. Identify the CHAT_ID. Look for a chat object like:
 
-```json
+```sh
 # Group example:
 "chat": { "id": -1001234567890, "type": "supergroup", "title": "Server Alerts" }
 ```
 
 #### Channel example:
-```json
+```sh
 # Channel example
 "chat": { "id": -1009876543210, "type": "channel", "title": "My Notifications" }
 ```
