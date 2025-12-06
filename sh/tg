@@ -1,38 +1,117 @@
 #!/bin/sh
-# tg - send Telegram message
+# tg - send message into a Telegram chat
 # Usage: tg "Your message here"
 
 set -eu
 
-# Resolve repo root relative to this script location
-SCRIPT_DIR="$(dirname "$0")"
-ENV_FILE="$SCRIPT_DIR/../.env"
+# ============================================================
+# 1. Find the REAL directory of this script (follows symlinks)
+# ============================================================
+# $0 can be relative or a symlink → resolve it completely
+if printf '%s' "$0" | grep -q '^/'; then
+    SCRIPT_PATH="$0"
+else
+    SCRIPT_PATH="$(pwd)/$0"
+fi
+
+# Follow every symlink until we reach the real file
+while [ -h "$SCRIPT_PATH" ]; do
+    # ls -ld gives "link -> target"
+    target=$(ls -ld "$SCRIPT_PATH" | sed 's/.* -> //')
+    if printf '%s' "$target" | grep -q '^/'; then
+        SCRIPT_PATH="$target"
+    else
+        # relative target → resolve against current symlink's dir
+        SCRIPT_PATH="$(dirname "$SCRIPT_PATH")/$target"
+    fi
+done
+
+# Real directory where the actual tg script lives (i.e. .../telegram-bot-notify/sh)
+REAL_SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+# Repository root = one level above sh/
+REPO_ROOT="$(cd "$REAL_SCRIPT_DIR/.." && pwd)"
+
+# ============================================================
+# 2. Load .env from repository root
+# ============================================================
+ENV_FILE="$REPO_ROOT/.env"
 
 if [ ! -f "$ENV_FILE" ]; then
-    echo "Error: .env file not found in repository root."
-    echo "Expected: $ENV_FILE"
+    echo "Error: .env file not found!" >&2
+    echo "Expected location: $ENV_FILE" >&2
+    echo "Copy .env.sample to .env and fill in API_TOKEN and CHAT_ID" >&2
     exit 1
 fi
 
-# Load env vars
+# Load variables
 . "$ENV_FILE"
 
-if [ -z "${API_TOKEN:-}" ] || [ -z "${CHAT_ID:-}" ]; then
-    echo "Error: API_TOKEN and CHAT_ID must be set in .env"
+# ============================================================
+# 3. Validate required variables
+# ============================================================
+# Check required variables – clear, friendly errors
+if [ -z "${API_TOKEN:-}" ]; then
+    echo "Error: API_TOKEN is missing in $ENV_FILE" >&2
+    echo "   → Copy .env.sample to .env and add your bot token" >&2
     exit 1
 fi
 
-if [ -z "${1:-}" ]; then
-    echo "Usage: tg <message>"
+if [ -z "${CHAT_ID:-}" ]; then
+    echo "Error: CHAT_ID is missing in $ENV_FILE" >&2
+    echo "   → Send a message to your bot and get the ID (see README)" >&2
+    exit 1
+fi
+
+# ============================================================
+# 4. Collect and encode message
+# ============================================================
+
+urlencode_basic() {
+    sed \
+        -e 's/%/%25/g'  \
+        -e 's/&/%26/g'  \
+        -e 's/+/%2B/g'  \
+        -e 's/=/%3D/g'  \
+        -e 's/ /%20/g'  \
+        -e 's/!/%21/g'  \
+        -e 's/\*/%2A/g' \
+        -e "s/'/%27/g"  \
+        -e 's/(/%28/g'  \
+        -e 's/)/%29/g'  \
+        -e 's/;/%3B/g'  \
+        -e 's/:/%3A/g'  \
+        -e 's/@/%40/g'  \
+        -e 's/,/%2C/g'  \
+        -e 's|/|%2F|g'  \
+        -e 's/\?/%3F/g' \
+        -e 's/#/%23/g'  \
+        -e 's/\[/%5B/g' \
+        -e 's/]/%5D/g'
+}
+
+
+if [ $# -eq 0 ]; then
+    echo "Usage: tg <message>" >&2
     exit 1
 fi
 
 MESSAGE="$*"
 
-curl -s \
-    --data "text=$MESSAGE" \
-    --data "chat_id=$CHAT_ID" \
-    "https://api.telegram.org/bot$API_TOKEN/sendMessage" \
-    > /dev/null
+ENCODED_MESSAGE=$(
+    printf '%s' "$MESSAGE" |
+    urlencode_basic |
+    awk '{printf "%s%%0A", $0}'
+)
+
+# ============================================================
+# 5. Send the message
+# ============================================================
+
+
+wget -q -O - \
+     --post-data "text=$ENCODED_MESSAGE" \
+     --post-data "chat_id=$CHAT_ID" \
+     "https://api.telegram.org/bot$API_TOKEN/sendMessage" > /dev/null
 
 echo "✅ Sent: $MESSAGE"

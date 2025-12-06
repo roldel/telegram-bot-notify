@@ -177,3 +177,10 @@ pip install -r requirements.txt
 # or: pip install python-dotenv requests
 Copy .env to the project root
 ```
+
+## 5. Send a Multi Lines Message
+
+Usage :
+```sh
+tg "$(printf 'Line 1\nLine 2\nLine 3\n')"
+```
