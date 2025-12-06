@@ -1,3 +1,4 @@
+```sh
 #!/bin/sh
 # tg - send message into a Telegram chat
 # Usage: tg "Your message here"
@@ -7,30 +8,24 @@ set -eu
 # ============================================================
 # 1. Find the REAL directory of this script (follows symlinks)
 # ============================================================
-# $0 can be relative or a symlink → resolve it completely
 if printf '%s' "$0" | grep -q '^/'; then
     SCRIPT_PATH="$0"
 else
     SCRIPT_PATH="$(pwd)/$0"
 fi
 
-# Follow every symlink until we reach the real file
 while [ -h "$SCRIPT_PATH" ]; do
-    # ls -ld gives "link -> target"
     target=$(ls -ld "$SCRIPT_PATH" | sed 's/.* -> //')
     if printf '%s' "$target" | grep -q '^/'; then
         SCRIPT_PATH="$target"
     else
-        # relative target → resolve against current symlink's dir
         SCRIPT_PATH="$(dirname "$SCRIPT_PATH")/$target"
     fi
 done
 
-# Real directory where the actual tg script lives (i.e. .../telegram-bot-notify/sh)
-REAL_SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+# Repository root = directory where tg itself lives
+REPO_ROOT="$(dirname "$SCRIPT_PATH")"
 
-# Repository root = one level above sh/
-REPO_ROOT="$(cd "$REAL_SCRIPT_DIR/.." && pwd)"
 
 # ============================================================
 # 2. Load .env from repository root
@@ -50,7 +45,6 @@ fi
 # ============================================================
 # 3. Validate required variables
 # ============================================================
-# Check required variables – clear, friendly errors
 if [ -z "${API_TOKEN:-}" ]; then
     echo "Error: API_TOKEN is missing in $ENV_FILE" >&2
     echo "   → Copy .env.sample to .env and add your bot token" >&2
@@ -66,7 +60,6 @@ fi
 # ============================================================
 # 4. Collect message
 # ============================================================
-
 if [ $# -eq 0 ]; then
     echo "Usage: tg <message>" >&2
     exit 1
@@ -74,12 +67,9 @@ fi
 
 MESSAGE="$*"
 
-
 # ============================================================
 # 5. Send the message
 # ============================================================
-
-
 POST_DATA="text=$MESSAGE&chat_id=$CHAT_ID"
 
 wget -q -O - \

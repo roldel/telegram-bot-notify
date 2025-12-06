@@ -1,26 +1,21 @@
 # telegram-bot-notify
 Simple, clear and reusable Telegram notification setup.
-Create a bot in 2 minutes → send messages from shell or Python with one line :
+Create a bot in 2 minutes → send messages from shell with one line :
 
 - `tg "message"` from shell  
-- `tg("message")` from Python
 
 ```
 telegram-bot-notify/
 ├── .env.sample
 ├── .env
 ├── README.md
-├── sh/
-│   └── tg
-└── python/
-    ├── tg.py
-    └── requirements.txt
+└── tg
 ```
 
 
 # Telegram Bot Notification – Super Simple Setup
 
-Send Telegram messages from your terminal or Python script in one line.
+Send Telegram messages from your terminal in one line.
 
 ## 1. Create your bot with @BotFather (2 minutes)
 
@@ -110,11 +105,6 @@ Now **everyone in that group/channel** will receive all bot notifications.
 | **Channel notifications** | `-100xxxxxxxxxx` | All channel subscribers |
 
 
-
-
-
-
-
 ## 3. Setup `.env` in the repository root
 
 Copy the example file:
@@ -142,45 +132,10 @@ CHAT_ID=123456789
 
 Make script executable and put it in your PATH:
 ```sh
-chmod +x bash/tg
-sudo cp bash/tg /usr/local/bin/tg   # now you can use `tg` anywhere
+ln -s bash/tg /usr/local/bin/tg   # now you can use 'tg` anywhere
 ```
 ### Usage :
 ```sh
 tg "Server backup finished successfully ✅"
 tg "Disk usage > 90% on $(hostname) ⚠️"
-```
-
-## 5. Python version – one-liner
-
-### Install Python version
-
-```sh
-cd python
-pip install -r requirements.txt
-# or: pip install python-dotenv requests
-Copy .env to the python folder or project root.
-```
-
-```python
-from tg import tg
-
-tg("Hello from Python 🚀")
-tg(f"Job completed at {__import__('datetime').datetime.now()}")
-```
-
-### Usage
-
-```sh
-cd python
-pip install -r requirements.txt
-# or: pip install python-dotenv requests
-Copy .env to the project root
-```
-
-## 5. Send a Multi Lines Message
-
-Usage :
-```sh
-tg "$(printf 'Line 1\nLine 2\nLine 3\n')"
 ```
