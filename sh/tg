@@ -87,8 +87,3 @@ wget -q -O - \
      "https://api.telegram.org/bot$API_TOKEN/sendMessage" > /dev/null
 
 echo "✅ Sent: $MESSAGE"
-
-
-
-
-echo "✅ Sent: $MESSAGE"
