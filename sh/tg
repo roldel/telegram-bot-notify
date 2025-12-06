@@ -64,7 +64,7 @@ if [ -z "${CHAT_ID:-}" ]; then
 fi
 
 # ============================================================
-# 4. Collect and encode message
+# 4. Collect message
 # ============================================================
 
 if [ $# -eq 0 ]; then
@@ -81,7 +81,7 @@ MESSAGE="$*"
 
 
 wget -q -O - \
-     --post-data "text=$ENCODED_MESSAGE" \
+     --post-data "text=$MESSAGE" \
      --post-data "chat_id=$CHAT_ID" \
      "https://api.telegram.org/bot$API_TOKEN/sendMessage" > /dev/null
 
