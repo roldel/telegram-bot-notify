@@ -1,4 +1,3 @@
-```sh
 #!/bin/sh
 # tg - send message into a Telegram chat
 # Usage: tg "Your message here"
