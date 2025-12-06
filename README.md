@@ -1,8 +1,12 @@
-# telegram-bot-notify
-Simple, clear and reusable Telegram notification setup.
-Create a bot in 2 minutes → send messages from shell with one line :
+# Telegram Bot Notification
 
-- `tg "message"` from shell  
+## Simple, clear and reusable Telegram notification setup.
+
+### Create a bot in 2 minutes → send messages from shell with one line :
+
+- `tg <message>` from shell  
+
+<br>
 
 ```
 telegram-bot-notify/
@@ -12,10 +16,6 @@ telegram-bot-notify/
 └── tg
 ```
 
-
-# Telegram Bot Notification – Super Simple Setup
-
-Send Telegram messages from your terminal in one line.
 
 ## 1. Create your bot with @BotFather (2 minutes)
 
@@ -46,12 +46,14 @@ There are **two possible setups** depending on your use case:
 
 1. Open this link in your browser (replace `<YOUR_TOKEN>` with the one from your STEP 1 message above):
 
-`https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates`
+```
+https://api.telegram.org/bot<YOUR_TOKEN>/getUpdate
+```
 
 2. Send any message to your bot in Telegram (click "Start" or just say hi)
 3. Refresh the link above
 4. You will see JSON containing 
-```json
+```sh
 "chat":{"id":987654321,... }
 ```
 
@@ -75,7 +77,9 @@ This ensures it appears in `/getUpdates`.
 
 4. Open the same link:
 
-`https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates`
+```
+https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates
+```
 
 5. Look for a chat object like:
 
@@ -126,16 +130,38 @@ CHAT_ID=123456789
 
 
 
-## 4. Bash version – `tg "your message"`
+## *4. OPTIONAL : Make the tg tool available system wide*
 
-### Install
-
-Make script executable and put it in your PATH:
+### Add tg to your PATH:
 ```sh
-ln -s bash/tg /usr/local/bin/tg   # now you can use 'tg` anywhere
+ln -sf "$(pwd)/tg" /usr/local/bin/tg   # now you can use 'tg` anywhere
 ```
+
+
+## 5. Send Message – `tg "your message"`
+
 ### Usage :
 ```sh
 tg "Server backup finished successfully ✅"
-tg "Disk usage > 90% on $(hostname) ⚠️"
+# ✅ Sent: Server backup finished successfully ✅
+
+
+tg Disk usage > 90% on $(hostname) ⚠️
+# ✅ Sent:Disk usage > 90% on server-prod ⚠️
+
+
 ```
+
+### Multi line message :
+
+Add the charcaters `%0A`  where return to the line is needed :
+
+```sh
+tg "Server Status: OK%0A- CPU: 12%%0A- Disk: 45%"
+# ✅ Sent:Server Status: OK%0A- CPU: 12%%0A- Disk: 45%
+```
+Renders as such in Telegram : 
+```sh
+    Server Status: OK
+    - CPU: 12%
+    - Disk: 45%"
