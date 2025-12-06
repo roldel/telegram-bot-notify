@@ -84,11 +84,12 @@ urlencode_basic() {
         -e 's/@/%40/g'  \
         -e 's/,/%2C/g'  \
         -e 's|/|%2F|g'  \
-        -e 's/\?/%3F/g' \
+        -e 's/?/%3F/g'  \
         -e 's/#/%23/g'  \
         -e 's/\[/%5B/g' \
         -e 's/]/%5D/g'
 }
+
 
 
 if [ $# -eq 0 ]; then
